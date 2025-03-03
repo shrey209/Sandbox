@@ -2,13 +2,23 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"syscall"
 )
 
 func main() {
-	fmt.Println("🚀 Starting sandboxed environment...")
+
+	ymlfile := "./config.yml"
+
+	data, err := ReadYML(ymlfile) // Function is now accessible
+	if err != nil {
+		log.Fatal("failed to read yml file:", err)
+	}
+
+	fmt.Println("Mount Paths:", data.Mount)
+	fmt.Println(" Starting sandboxed environment...")
 
 	cmd := exec.Command("/proc/self/exe", "child")
 	cmd.Stdin = os.Stdin
@@ -30,7 +40,7 @@ func main() {
 	}
 
 	if err := cmd.Run(); err != nil {
-		fmt.Println("❌ Failed to start sandbox:", err)
+		fmt.Println(" Failed to start sandbox:", err)
 	}
 }
 
@@ -51,7 +61,7 @@ func init() {
 		// Mount a tmpfs (RAM-based) filesystem to isolate changes
 		err := syscall.Mount("tmpfs", newRoot, "tmpfs", 0, "")
 		if err != nil {
-			fmt.Println("❌ Failed to mount tmpfs:", err)
+			fmt.Println(" Failed to mount tmpfs:", err)
 			os.Exit(1)
 		}
 
@@ -82,18 +92,18 @@ func init() {
 		fmt.Println(abcPyPath)
 		err = syscall.Mount("/usr/bin/python3", newRoot+"/usr/bin/python3", "", syscall.MS_BIND, "")
 		if err != nil {
-			fmt.Println("❌ Failed to mount Python:", err)
+			fmt.Println("Failed to mount Python:", err)
 			os.Exit(1)
 		}
-		err = syscall.Mount(abcPyPath, newRoot+"/abc.py", "", syscall.MS_BIND, "")
-		if err != nil {
-			fmt.Println("❌ Failed to mount file:", err)
-			os.Exit(1)
-		}
+		// err = syscall.Mount(abcPyPath, newRoot+"/abc.py", "", syscall.MS_BIND, "")
+		// if err != nil {
+		// 	fmt.Println("Failed to mount file:", err)
+		// 	os.Exit(1)
+		// }
 
 		// Change root to the new isolated filesystem
 		if err := syscall.Chroot(newRoot); err != nil {
-			fmt.Println("❌ Failed to change root:", err)
+			fmt.Println("Failed to change root:", err)
 			os.Exit(1)
 		}
 		os.Chdir("/") // Ensure we are inside the new root
@@ -101,7 +111,7 @@ func init() {
 		// Run a shell in the sandbox
 		err = syscall.Exec("/bin/sh", []string{"sh"}, os.Environ())
 		if err != nil {
-			fmt.Println("❌ Failed to start shell:", err)
+			fmt.Println(" Failed to start shell:", err)
 			os.Exit(1)
 		}
 	}
