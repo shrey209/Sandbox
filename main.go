@@ -85,8 +85,9 @@ func init() {
 		syscall.Mount("/proc", newRoot+"/proc", "proc", 0, "")
 
 		// Bind-mount abc.py from the current directory
-		// currentDir, _ := os.Getwd() + "/abc.py"
-		//	syscall.Mount(currentDir+"", newRoot+"/home/abc.py", "", syscall.MS_BIND, "")
+		currentDir, _ := os.Getwd() + "/abc.py"
+			syscall.Mount(currentDir+"", newRoot+"/home/abc.py", "", syscall.MS_BIND, "")
+		fmt.println("mounting on path")
 		currentDir, _ := os.Getwd()
 		abcPyPath := currentDir + "/abc.py"
 		fmt.Println(abcPyPath)
