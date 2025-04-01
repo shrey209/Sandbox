@@ -94,7 +94,7 @@ func init() {
 		err = syscall.Mount("/usr/bin/python3", newRoot+"/usr/bin/python3", "", syscall.MS_BIND, "")
 		if err != nil {
 			fmt.Println("Failed to mount Python:", err)
-			os.Exit(1)
+			fmt.Fatal("failed")
 		}
 		// err = syscall.Mount(abcPyPath, newRoot+"/abc.py", "", syscall.MS_BIND, "")
 		// if err != nil {
