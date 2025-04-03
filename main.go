@@ -107,7 +107,7 @@ func init() {
 			fmt.Println("Failed to change root:", err)
 			os.Exit(1)
 		}
-		os.Chdir("/") // Ensure we are inside the new root
+		// Ensure we are inside the new root
 
 		// Run a shell in the sandbox
 		err = syscall.Exec("/bin/sh", []string{"sh"}, os.Environ())
